@@ -2,168 +2,202 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LE SSERAFIM 搶票答題驗證</title>
+  <title>LE SSERAFIM 搶票系統</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f7f7f7;
-      color: #333;
+      font-family: "微軟正黑體", Arial, sans-serif;
+      background-color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1024px;
+      margin: 0 auto;
       padding: 2rem;
-      max-width: 600px;
-      margin: auto;
     }
-    h1 {
-      color: #d6249f;
-    }
-    .question {
-      margin-bottom: 1.5rem;
-    }
-    input[type="text"] {
-      padding: 0.5rem;
-      width: 100%;
+    #countdown {
       font-size: 1rem;
+      color: #c00;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .buttons {
+      display: flex;
+      gap: 0.5rem;
       margin-bottom: 1rem;
     }
-    button {
-      background-color: #1a73e8;
-      color: white;
-      padding: 0.7rem 1.5rem;
+    .buttons button {
+      flex: 1;
+      padding: 1rem;
       font-size: 1rem;
-      border: none;
+      border: 1px solid #ccc;
+      background-color: #eee;
+      color: #000;
       cursor: pointer;
+    }
+    .buttons button.active {
+      background-color: #004a99;
+      color: white;
+    }
+    .buttons button:disabled {
+      background-color: #ddd;
+      cursor: not-allowed;
+    }
+    .search-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    .search-bar select, .search-bar input {
+      padding: 0.5rem;
+      font-size: 1rem;
+      flex: 1;
+      border: 1px solid #ccc;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    th {
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+    .buy-btn {
+      background-color: #999;
+      color: white;
+      padding: 0.5rem 1.2rem;
+      border: none;
       border-radius: 4px;
+      cursor: not-allowed;
     }
-    .error {
-      color: red;
+    .buy-btn.enabled {
+      background-color: #0052cc;
+      cursor: pointer;
+    }
+    .buy-btn.enabled:hover {
+      background-color: #003f99;
+    }
+    .warning {
+      color: #c00;
+      background-color: #fff4f4;
+      padding: 1rem;
+      font-size: 0.85rem;
+      border-left: 4px solid #c00;
+      margin-top: 2rem;
+    }
+    .hidden {
       display: none;
-      margin-bottom: 1rem;
     }
-    .retry {
-      color: #555;
-      font-size: 0.9rem;
-      margin-top: 0.5rem;
+    #timeInput {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    #timeInput input {
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin-right: 0.5rem;
+      width: 80px;
+    }
+    #timeInput button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
     }
   </style>
 </head>
 <body>
-  <h1>LE SSERAFIM 搶票答題驗證</h1>
+  <div class="container">
+    <div id="timeInput">
+      <label for="seconds">請輸入倒數秒數：</label>
+      <input type="number" id="seconds" min="1" placeholder="例如 10">
+      <button onclick="startCountdown()">啟動倒數</button>
+    </div>
 
-  <div id="quiz-container"></div>
+    <div id="countdown"></div>
 
-  <label for="answer">請輸入你的答案（例如：CO）：</label>
-  <input type="text" id="answer" placeholder="請輸入大寫英文，例如：CO">
-  <div class="error" id="error">答案錯誤，請再試一次！</div>
-  <button onclick="checkAnswer()">提交驗證</button>
+    <div class="buttons">
+      <button class="active" onclick="revealTicketSection()" id="showTicketBtn" disabled>立即購票</button>
+      <button>購票流程</button>
+      <button>取票流程</button>
+      <button>退票申請表</button>
+    </div>
+
+    <div class="search-bar">
+      <select>
+        <option value="">請選擇日期</option>
+        <option>2025/06/15</option>
+      </select>
+      <input type="text" placeholder="請輸入搜尋關鍵字">
+    </div>
+
+    <div class="purchase-section hidden" id="ticketSection">
+      <table>
+        <thead>
+          <tr>
+            <th>演出時間</th>
+            <th>場次名稱</th>
+            <th>場地</th>
+            <th>購買狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025/06/15 (日) 18:00</td>
+            <td>LE SSERAFIM FANCON TOUR – FLAME RISES IN TAIPEI</td>
+            <td>台北小巨蛋</td>
+            <td><button id="buyBtn" class="buy-btn" disabled>立即訂購</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="warning">
+        為確保公平，需先完成加入會員及手機驗證並驗證成功後，才可開始購票。<br>
+        建議使用桌機或平板裝置完成操作以獲得最佳體驗。
+      </div>
+    </div>
+  </div>
 
   <script>
-    const questions = [
-      {
-        text: "LE SSERAFIM 的官方粉絲名稱是什麼？",
-        options: [
-          { label: "A", text: "Flame" },
-          { label: "B", text: "Fearless" },
-          { label: "C", text: "FEARNOT" },
-          { label: "D", text: "Firefly" }
-        ],
-        answer: "C"
-      },
-      {
-        text: "LE SSERAFIM 第二位公布的成員是誰？",
-        options: [
-          { label: "M", text: "金采源" },
-          { label: "N", text: "許允真" },
-          { label: "O", text: "洪恩採" },
-          { label: "P", text: "中村一葉" }
-        ],
-        answer: "O"
-      },
-      {
-        text: "LE SSERAFIM 的第一張專輯是？",
-        options: [
-          { label: "E", text: "ANTIFRAGILE" },
-          { label: "F", text: "UNFORGIVEN" },
-          { label: "G", text: "FEARLESS" },
-          { label: "H", text: "CRAZY" }
-        ],
-        answer: "G"
-      },
-      {
-        text: "以下哪支 MV 是最快破億的？",
-        options: [
-          { label: "J", text: "Fearless" },
-          { label: "K", text: "Antifragile" },
-          { label: "L", text: "Easy" },
-          { label: "M", text: "Unforgiven" }
-        ],
-        answer: "K"
-      },
-      {
-        text: "LE SSERAFIM 第八支破億的 MV 是哪一首？",
-        options: [
-          { label: "Q", text: "Smart" },
-          { label: "R", text: "Crazy" },
-          { label: "S", text: "Perfect Night" },
-          { label: "T", text: "Easy" }
-        ],
-        answer: "R"
-      },
-      {
-        text: "LE SSERAFIM 的應援色是什麼？",
-        options: [
-          { label: "U", text: "Rose Gold" },
-          { label: "V", text: "Fearless Blue" },
-          { label: "W", text: "Midnight Black" },
-          { label: "X", text: "Sunset Orange" }
-        ],
-        answer: "V"
+    let countdownInterval;
+
+    function startCountdown() {
+      const secondsInput = document.getElementById("seconds").value;
+      let remaining = parseInt(secondsInput);
+      const countdownEl = document.getElementById("countdown");
+      const buyBtn = document.getElementById("buyBtn");
+      const showBtn = document.getElementById("showTicketBtn");
+
+      if (isNaN(remaining) || remaining <= 0) {
+        alert("請輸入正確的秒數");
+        return;
       }
-    ];
 
-    let selected = [];
-    let correctAnswer = "";
+      showBtn.disabled = false;
+      countdownEl.innerText = `距離開放購票剩餘 ${remaining} 秒`;
 
-    function shuffle(array) {
-      return array.sort(() => Math.random() - 0.5);
+      countdownInterval = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+          clearInterval(countdownInterval);
+          countdownEl.innerText = "購票已開放！請按下立即購票查看。";
+          buyBtn.classList.add("enabled");
+          buyBtn.disabled = false;
+          buyBtn.onclick = () => location.href = 'quiz.html';
+        } else {
+          countdownEl.innerText = `距離開放購票剩餘 ${remaining} 秒`;
+        }
+      }, 1000);
     }
 
-    function renderQuestions() {
-      const container = document.getElementById("quiz-container");
-      container.innerHTML = "";
-      selected = [];
-      const picked = shuffle([...questions]).slice(0, 2);
-
-      picked.forEach((q, idx) => {
-        selected.push(q);
-        const shuffledOptions = shuffle([...q.options]);
-        const qDiv = document.createElement("div");
-        qDiv.className = "question";
-        qDiv.innerHTML = `
-          <p><strong>Q${idx + 1}：</strong>${q.text}</p>
-          <ul>${shuffledOptions.map(o => `<li>${o.label}. ${o.text}</li>`).join('')}</ul>
-        `;
-        container.appendChild(qDiv);
-
-        // 紀錄正確答案的新 label
-        const correct = shuffledOptions.find(o => o.text === q.options.find(opt => opt.label === q.answer).text);
-        q.correctLabel = correct.label;
-      });
-
-      correctAnswer = picked.map(q => q.correctLabel).join("");
+    function revealTicketSection() {
+      document.getElementById("ticketSection").classList.remove("hidden");
+      document.getElementById("showTicketBtn").classList.add("active");
     }
-
-    function checkAnswer() {
-      const input = document.getElementById("answer").value.trim().toUpperCase();
-      const errorMsg = document.getElementById("error");
-
-      if (input === correctAnswer) {
-        window.location.href = "ticket.html";
-      } else {
-        errorMsg.style.display = "block";
-      }
-    }
-
-    window.onload = renderQuestions;
   </script>
 </body>
 </html>
