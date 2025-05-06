@@ -3,34 +3,167 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LE SSERAFIM 搶票模擬系統</title>
+  <title>LE SSERAFIM 搶票答題驗證</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #fff;
-      text-align: center;
-      padding: 3rem;
+      background-color: #f7f7f7;
+      color: #333;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
     }
     h1 {
       color: #d6249f;
     }
-    p {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
+    .question {
+      margin-bottom: 1.5rem;
     }
-    a {
-      text-decoration: none;
+    input[type="text"] {
+      padding: 0.5rem;
+      width: 100%;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    button {
       background-color: #1a73e8;
       color: white;
-      padding: 1rem 2rem;
+      padding: 0.7rem 1.5rem;
       font-size: 1rem;
-      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .error {
+      color: red;
+      display: none;
+      margin-bottom: 1rem;
+    }
+    .retry {
+      color: #555;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <h1>LE SSERAFIM 搶票模擬系統</h1>
-  <p>請先通過粉絲答題驗證才能進入購票程序</p>
-  <a href="quiz.html">立即驗證購票資格</a>
+  <h1>LE SSERAFIM 搶票答題驗證</h1>
+
+  <div id="quiz-container"></div>
+
+  <label for="answer">請輸入你的答案（例如：CO）：</label>
+  <input type="text" id="answer" placeholder="請輸入大寫英文，例如：CO">
+  <div class="error" id="error">答案錯誤，請再試一次！</div>
+  <button onclick="checkAnswer()">提交驗證</button>
+
+  <script>
+    const questions = [
+      {
+        text: "LE SSERAFIM 的官方粉絲名稱是什麼？",
+        options: [
+          { label: "A", text: "Flame" },
+          { label: "B", text: "Fearless" },
+          { label: "C", text: "FEARNOT" },
+          { label: "D", text: "Firefly" }
+        ],
+        answer: "C"
+      },
+      {
+        text: "LE SSERAFIM 第二位公布的成員是誰？",
+        options: [
+          { label: "M", text: "金采源" },
+          { label: "N", text: "許允真" },
+          { label: "O", text: "洪恩採" },
+          { label: "P", text: "中村一葉" }
+        ],
+        answer: "O"
+      },
+      {
+        text: "LE SSERAFIM 的第一張專輯是？",
+        options: [
+          { label: "E", text: "ANTIFRAGILE" },
+          { label: "F", text: "UNFORGIVEN" },
+          { label: "G", text: "FEARLESS" },
+          { label: "H", text: "CRAZY" }
+        ],
+        answer: "G"
+      },
+      {
+        text: "以下哪支 MV 是最快破億的？",
+        options: [
+          { label: "J", text: "Fearless" },
+          { label: "K", text: "Antifragile" },
+          { label: "L", text: "Easy" },
+          { label: "M", text: "Unforgiven" }
+        ],
+        answer: "K"
+      },
+      {
+        text: "LE SSERAFIM 第八支破億的 MV 是哪一首？",
+        options: [
+          { label: "Q", text: "Smart" },
+          { label: "R", text: "Crazy" },
+          { label: "S", text: "Perfect Night" },
+          { label: "T", text: "Easy" }
+        ],
+        answer: "R"
+      },
+      {
+        text: "LE SSERAFIM 的應援色是什麼？",
+        options: [
+          { label: "U", text: "Rose Gold" },
+          { label: "V", text: "Fearless Blue" },
+          { label: "W", text: "Midnight Black" },
+          { label: "X", text: "Sunset Orange" }
+        ],
+        answer: "V"
+      }
+    ];
+
+    let selected = [];
+    let correctAnswer = "";
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function renderQuestions() {
+      const container = document.getElementById("quiz-container");
+      container.innerHTML = "";
+      selected = [];
+      const picked = shuffle([...questions]).slice(0, 2);
+
+      picked.forEach((q, idx) => {
+        selected.push(q);
+        const shuffledOptions = shuffle([...q.options]);
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+        qDiv.innerHTML = `
+          <p><strong>Q${idx + 1}：</strong>${q.text}</p>
+          <ul>${shuffledOptions.map(o => `<li>${o.label}. ${o.text}</li>`).join('')}</ul>
+        `;
+        container.appendChild(qDiv);
+
+        // 紀錄正確答案的新 label
+        const correct = shuffledOptions.find(o => o.text === q.options.find(opt => opt.label === q.answer).text);
+        q.correctLabel = correct.label;
+      });
+
+      correctAnswer = picked.map(q => q.correctLabel).join("");
+    }
+
+    function checkAnswer() {
+      const input = document.getElementById("answer").value.trim().toUpperCase();
+      const errorMsg = document.getElementById("error");
+
+      if (input === correctAnswer) {
+        window.location.href = "ticket.html";
+      } else {
+        errorMsg.style.display = "block";
+      }
+    }
+
+    window.onload = renderQuestions;
+  </script>
 </body>
 </html>
