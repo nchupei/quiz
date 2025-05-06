@@ -6,49 +6,76 @@
   <title>LE SSERAFIM 搶票答題驗證</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f7f7f7;
-      color: #333;
+      font-family: "微軟正黑體", Arial, sans-serif;
+      background-color: #ffffff;
+      color: #111;
       padding: 2rem;
-      max-width: 600px;
+      max-width: 720px;
       margin: auto;
+      border: 1px solid #ccc;
     }
     h1 {
-      color: #d6249f;
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      color: #0074cc;
     }
     .question {
-      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    .question ul {
+      list-style: none;
+      padding-left: 1rem;
+      margin-top: 0.5rem;
+    }
+    .question li {
+      margin: 0.3rem 0;
     }
     input[type="text"] {
       padding: 0.5rem;
       width: 100%;
       font-size: 1rem;
+      margin-top: 0.5rem;
       margin-bottom: 1rem;
     }
     button {
-      background-color: #1a73e8;
+      background-color: #0074cc;
       color: white;
-      padding: 0.7rem 1.5rem;
+      padding: 0.6rem 1.2rem;
       font-size: 1rem;
       border: none;
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 3px;
+      margin-right: 0.5rem;
     }
     .error {
       color: red;
       display: none;
+      margin-bottom: 1rem;
+    }
+    #hint {
+      display: none;
+      background-color: #f4f4f4;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-left: 4px solid #0074cc;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
-  <h1>LE SSERAFIM 搶票答題驗證</h1>
+  <h1>請依照下列問題回答並輸入選項代碼，全部正確才能進入購票頁面：</h1>
 
   <div id="quiz-container"></div>
 
-  <label for="answer">請輸入你的答案（例如：CO）：</label>
-  <input type="text" id="answer" placeholder="請輸入大寫英文，例如：CO">
+  <label for="answer">請輸入答案（如：CO）</label>
+  <input type="text" id="answer" placeholder="請輸入大寫英文選項，如：CO">
   <div class="error" id="error">答案錯誤，請再試一次！</div>
-  <button onclick="checkAnswer()">提交驗證</button>
+  <button onclick="checkAnswer()">送出</button>
+  <button onclick="toggleHint()">提示</button>
+
+  <div id="hint"></div>
 
   <script>
     const questions = [
@@ -111,147 +138,47 @@
           { label: "X", text: "Sunset Orange" }
         ],
         answer: "V"
-      }
+      },
       {
-        text: "LE SSERAFIM 是哪一天首次公開團名？",
+        text: "LE SSERAFIM 在何時拿下 AAA 三冠王？",
         options: [
-          { label: "A", text: "2022/03/28" },
-          { label: "B", text: "2022/05/02" },
-          { label: "C", text: "2022/04/15" },
-          { label: "D", text: "2021/12/25" }
+          { label: "A", text: "2023年" },
+          { label: "B", text: "2024年" },
+          { label: "C", text: "2022年" },
+          { label: "D", text: "2025年" }
+        ],
+        answer: "B"
+      },
+      {
+        text: "LE SSERAFIM 在 NHK 紅白初登場是哪年？",
+        options: [
+          { label: "A", text: "2022" },
+          { label: "B", text: "2023" },
+          { label: "C", text: "2024" },
+          { label: "D", text: "2021" }
         ],
         answer: "A"
       },
       {
-        text: "LE SSERAFIM 出道時的主打歌是？",
+        text: "LE SSERAFIM 的應援色為？",
         options: [
-          { label: "A", text: "Unforgiven" },
-          { label: "B", text: "Fearless" },
-          { label: "C", text: "Antifragile" },
-          { label: "D", text: "Easy" }
+          { label: "A", text: "Sapphire Blue" },
+          { label: "B", text: "Fearless Blue" },
+          { label: "C", text: "Cotton Pink" },
+          { label: "D", text: "Glitter Gold" }
         ],
         answer: "B"
       },
       {
-        text: "LE SSERAFIM 第一位公開的成員是？",
+        text: "粉絲名稱 FEARNOT 的寓意是什麼？",
         options: [
-          { label: "A", text: "金采源" },
-          { label: "B", text: "許允真" },
-          { label: "C", text: "櫻花" },
-          { label: "D", text: "洪恩採" }
+          { label: "A", text: "不再恐懼的我們" },
+          { label: "B", text: "要勇敢追夢" },
+          { label: "C", text: "綻放的花朵" },
+          { label: "D", text: "我們不再孤單" }
         ],
         answer: "C"
       },
-      {
-        text: "LE SSERAFIM 第三支破億 MV 是哪一首？",
-        options: [
-          { label: "A", text: "Unforgiven" },
-          { label: "B", text: "Smart" },
-          { label: "C", text: "Perfect Night" },
-          { label: "D", text: "Easy" }
-        ],
-        answer: "A"
-      },
-      {
-        text: "以下哪位成員不是出道五人之一？",
-        options: [
-          { label: "A", text: "Kazuha" },
-          { label: "B", text: "金采源" },
-          { label: "C", text: "洪恩採" },
-          { label: "D", text: "金玟周" } // 設為誤導選項
-        ],
-        answer: "D"
-      },
-      {
-        text: "LE SSERAFIM 第六支破億 MV 是哪一首？",
-        options: [
-          { label: "A", text: "Perfect Night" },
-          { label: "B", text: "Fearless" },
-          { label: "C", text: "Unforgiven" },
-          { label: "D", text: "Smart" }
-        ],
-        answer: "A"
-      },
-      {
-        text: "粉絲名稱 FEARNOT 的含義與哪個字詞有關？",
-        options: [
-          { label: "A", text: "Fearless" },
-          { label: "B", text: "Bloom 綻放" },
-          { label: "C", text: "Victory" },
-          { label: "D", text: "Support" }
-        ],
-        answer: "B"
-      },
-      {
-        text: "LE SSERAFIM 是第幾組連續兩週進入 Billboard Hot100 的女團？",
-        options: [
-          { label: "A", text: "第三組" },
-          { label: "B", text: "第四組" },
-          { label: "C", text: "第六組" },
-          { label: "D", text: "第八組" }
-        ],
-        answer: "C"
-      }
-      {
-        text: "LE SSERAFIM 的隊長是誰？",
-        options: [
-          { label: "A", text: "許允真" },
-          { label: "B", text: "中村一葉" },
-          { label: "C", text: "金采源" },
-          { label: "D", text: "櫻花" }
-        ],
-        answer: "C"
-      },
-      {
-        text: "LE SSERAFIM 的忙內是誰？",
-        options: [
-          { label: "A", text: "金采源" },
-          { label: "B", text: "洪恩採" },
-          { label: "C", text: "KAZUHA" },
-          { label: "D", text: "SAKURA" }
-        ],
-        answer: "B"
-      },
-      {
-        text: "LE SSERAFIM 第五位公開的成員是誰？",
-        options: [
-          { label: "A", text: "中村一葉" },
-          { label: "B", text: "櫻花" },
-          { label: "C", text: "許允真" },
-          { label: "D", text: "金采源" }
-        ],
-        answer: "C"
-      }
-      {
-        text: "LE SSERAFIM 第一支破億的 MV 是哪首？",
-        options: [
-          { label: "A", text: "Unforgiven" },
-          { label: "B", text: "Fearless" },
-          { label: "C", text: "Antifragile" },
-          { label: "D", text: "Perfect Night" }
-        ],
-        answer: "B"
-      },
-      {
-        text: "LE SSERAFIM 哪支 MV 是破億速度最快的？",
-        options: [
-          { label: "A", text: "Fearless" },
-          { label: "B", text: "Smart" },
-          { label: "C", text: "Antifragile" },
-          { label: "D", text: "Crazy" }
-        ],
-        answer: "C"
-      },
-      {
-        text: "《Easy》是哪支破億 MV？",
-        options: [
-          { label: "A", text: "第 3 支" },
-          { label: "B", text: "第 5 支" },
-          { label: "C", text: "第 7 支" },
-          { label: "D", text: "第 8 支" }
-        ],
-        answer: "C"
-      }
       {
         text: "LE SSERAFIM 的《Unforgiven》是哪年幾月發行？",
         options: [
@@ -281,54 +208,38 @@
           { label: "D", text: "2023年5月" }
         ],
         answer: "A"
-      }
+      },
       {
-        text: "LE SSERAFIM 的應援色為？",
+        text: "LE SSERAFIM 第一支破億的 MV 是哪首？",
         options: [
-          { label: "A", text: "Sapphire Blue" },
-          { label: "B", text: "Fearless Blue" },
-          { label: "C", text: "Cotton Pink" },
-          { label: "D", text: "Glitter Gold" }
+          { label: "A", text: "Unforgiven" },
+          { label: "B", text: "Fearless" },
+          { label: "C", text: "Antifragile" },
+          { label: "D", text: "Perfect Night" }
         ],
         answer: "B"
       },
       {
-        text: "粉絲名稱 FEARNOT 的寓意是什麼？",
+        text: "LE SSERAFIM 哪支 MV 是破億速度最快的？",
         options: [
-          { label: "A", text: "不再恐懼的我們" },
-          { label: "B", text: "要勇敢追夢" },
-          { label: "C", text: "綻放的花朵" },
-          { label: "D", text: "我們不再孤單" }
+          { label: "A", text: "Fearless" },
+          { label: "B", text: "Smart" },
+          { label: "C", text: "Antifragile" },
+          { label: "D", text: "Crazy" }
         ],
         answer: "C"
-      }
-      {
-        text: "LE SSERAFIM 在何時拿下 AAA 三冠王？",
-        options: [
-          { label: "A", text: "2023年" },
-          { label: "B", text: "2024年" },
-          { label: "C", text: "2022年" },
-          { label: "D", text: "2025年" }
-        ],
-        answer: "B"
       },
       {
-        text: "LE SSERAFIM 在 NHK 紅白初登場是哪年？",
+        text: "《Easy》是哪支破億 MV？",
         options: [
-          { label: "A", text: "2022" },
-          { label: "B", text: "2023" },
-          { label: "C", text: "2024" },
-          { label: "D", text: "2021" }
+          { label: "A", text: "第 3 支" },
+          { label: "B", text: "第 5 支" },
+          { label: "C", text: "第 7 支" },
+          { label: "D", text: "第 8 支" }
         ],
-        answer: "A"
-      }
-      
-      
-      
-      
-      
+        answer: "C"
+      }  
     ];
-
 
     let selected = [];
     let correctAnswer = "";
@@ -340,6 +251,8 @@
     function renderQuestions() {
       const container = document.getElementById("quiz-container");
       container.innerHTML = "";
+      document.getElementById("hint").innerHTML = "";
+      document.getElementById("hint").style.display = "none";
       selected = [];
       const picked = shuffle([...questions]).slice(0, 2);
 
@@ -349,12 +262,11 @@
         const qDiv = document.createElement("div");
         qDiv.className = "question";
         qDiv.innerHTML = `
-          <p><strong>Q${idx + 1}：</strong>${q.text}</p>
-          <ul>${shuffledOptions.map(o => `<li>${o.label}. ${o.text}</li>`).join('')}</ul>
+          題目 ${idx + 1}：${q.text}<br>
+          <ul>${shuffledOptions.map(o => `<li>(${o.label}) ${o.text}</li>`).join('')}</ul>
         `;
         container.appendChild(qDiv);
 
-        // 紀錄正確答案的新 label
         const correct = shuffledOptions.find(o => o.text === q.options.find(opt => opt.label === q.answer).text);
         q.correctLabel = correct.label;
       });
@@ -367,9 +279,19 @@
       const errorMsg = document.getElementById("error");
 
       if (input === correctAnswer) {
-        window.location.href = "ticket.html";
+        window.location.href = "ticket.html?success=1";
       } else {
         errorMsg.style.display = "block";
+      }
+    }
+
+    function toggleHint() {
+      const hint = document.getElementById("hint");
+      if (hint.style.display === "none") {
+        hint.innerText = `正確答案是：${correctAnswer}`;
+        hint.style.display = "block";
+      } else {
+        hint.style.display = "none";
       }
     }
 
