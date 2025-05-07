@@ -118,8 +118,16 @@
       document.getElementById("hint").style.display = "none";
       correctAnswer = "";
 
-      const selected = questions.sort(() => Math.random() - 0.5).slice(0, 2);
-      window.usedQuestions = selected;
+    let selected;
+    const saved = localStorage.getItem("selectedQuestions");
+    if (saved) {
+      selected = JSON.parse(saved);
+    } else {
+      selected = questions.sort(() => Math.random() - 0.5).slice(0, 2);
+      localStorage.setItem("selectedQuestions", JSON.stringify(selected));
+    }
+    window.usedQuestions = selected;
+
 
       selected.forEach((q, idx) => {
         const qDiv = document.createElement("div");
