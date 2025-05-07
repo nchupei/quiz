@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>LE SSERAFIM 搶票系統</title>
+  <title>LE SSERAFIM 答題</title>
   <style>
     body {
       font-family: "微軟正黑體", Arial, sans-serif;
@@ -115,7 +115,7 @@
     <div id="timeInput">
       <label for="seconds">請輸入倒數秒數：</label>
       <input type="number" id="seconds" min="1" placeholder="例如 10">
-      <button onclick="startCountdown()">啟動倒數</button>
+      <button onclick="startCountdown()">開始倒數</button>
     </div>
 
     <div id="countdown"></div>
@@ -147,9 +147,9 @@
         </thead>
         <tbody>
           <tr>
-            <td>2025/06/15 (日) 18:00</td>
-            <td>LE SSERAFIM FANCON TOUR – FLAME RISES IN TAIPEI</td>
-            <td>台北小巨蛋</td>
+            <td>2025/07/19 (六) 18:00</td>
+            <td>2025 LE SSERAFIM TOUR『Easy Crazy HOT』IN TAIPEI</td>
+            <td>國立體育大學綜合體育館</td>
             <td><button id="buyBtn" class="buy-btn" disabled>立即訂購</button></td>
           </tr>
         </tbody>
@@ -171,15 +171,19 @@
       const countdownEl = document.getElementById("countdown");
       const buyBtn = document.getElementById("buyBtn");
       const showBtn = document.getElementById("showTicketBtn");
-
+      const startButton = document.querySelector('#timeInput button');
+    
       if (isNaN(remaining) || remaining <= 0) {
         alert("請輸入正確的秒數");
         return;
       }
-
+    
+      // 禁用啟動按鈕，避免多次倒數
+      startButton.disabled = true;
+    
       showBtn.disabled = false;
       countdownEl.innerText = `距離開放購票剩餘 ${remaining} 秒`;
-
+    
       countdownInterval = setInterval(() => {
         remaining--;
         if (remaining <= 0) {
@@ -187,12 +191,14 @@
           countdownEl.innerText = "購票已開放！請按下立即購票查看。";
           buyBtn.classList.add("enabled");
           buyBtn.disabled = false;
+          sessionStorage.setItem("quizStartTime", Date.now().toString());
           buyBtn.onclick = () => location.href = 'quiz.html';
         } else {
           countdownEl.innerText = `距離開放購票剩餘 ${remaining} 秒`;
         }
       }, 1000);
     }
+    
 
     function revealTicketSection() {
       document.getElementById("ticketSection").classList.remove("hidden");
