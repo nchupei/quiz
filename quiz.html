@@ -149,7 +149,10 @@
       const input = document.getElementById("answer").value.replaceAll(" ", "").trim().toUpperCase();
       const errorMsg = document.getElementById("error");
       const cleanAnswer = correctAnswer.replaceAll(";", "").trim().toUpperCase();
-      
+      if (correct) {
+        localStorage.removeItem("selectedQuestions");
+        window.location.href = "ticket.html?success=1";
+      }
       if (input === cleanAnswer) {
         window.location.href = "ticket.html?success=1";
       } else {
