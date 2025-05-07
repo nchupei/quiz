@@ -66,44 +66,38 @@
 </head>
 <body>
   <h1>請依照下列問題回答並輸入選項代碼，全部正確才能進入購票頁面：</h1>
+  <div class="error" id="error">答案錯誤，請再試一次！</div>
   <div id="quiz-container"></div>
 
   <label for="answer">請輸入答案（如：CAB）</label>
   <input type="text" id="answer" placeholder="請輸入大寫英文選項，如：CAB" autocomplete="off">
-  <div class="error" id="error">答案錯誤，請再試一次！</div>
   <button onclick="checkAnswer()">送出</button>
   <button onclick="toggleHint()">提示</button>
 
   <div id="hint"></div>
 
   <script>
-    const sheetURL = 'https://script.google.com/macros/s/AKfycby-iZu86RUo1KTC6F01sDtXyTAg_sTbsQg0H9YF346WSjCX-03B--lgooYVKVAlYohkfg/exec';
-    
+    const sheetURL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'; // ⛳ 替換為你實際部署網址
+
     let questions = [];
     let correctAnswer = "";
-    
+
     async function fetchQuestions() {
       try {
         const res = await fetch(sheetURL);
         const data = await res.json();
-    
+
         questions = data.map(row => {
-          const answer = (Array.isArray(row.answer) ? row.answer : [row.answer])
-            .join("")
-            .replaceAll(";", "")
-            .trim()
-            .toUpperCase();
-        
-          const options = row.options || {};  // ✅ 正確取得已包好的 options
-        
+          const options = Object.entries(row.options || {}).map(([label, text]) => ({ label, text }));
+          const answer = row.answer.toString().trim().toUpperCase().replaceAll(";", "").replaceAll(",", "");
+
           return {
             question: row.question,
-            options: options,
+            options,
             answer
           };
         });
 
-    
         renderQuestions();
       } catch (err) {
         document.getElementById("error").innerText = "載入題目失敗，請稍後再試。";
@@ -112,50 +106,47 @@
       }
     }
 
-    
     function renderQuestions() {
       const container = document.getElementById("quiz-container");
       container.innerHTML = "";
       document.getElementById("hint").style.display = "none";
       correctAnswer = "";
-    
-      questions.slice(0, 2).forEach((q, idx) => {
+
+      const selected = questions.sort(() => Math.random() - 0.5).slice(0, 2);
+      window.usedQuestions = selected;
+
+      selected.forEach((q, idx) => {
         const qDiv = document.createElement("div");
         qDiv.className = "question";
-        qDiv.innerHTML = `
-          題目 ${idx + 1}：${q.question} ${q.type === "multiple" ? "（複選）" : q.type === "ordering" ? "（排序）" : ""}<br>
-          <ul>
-            ${q.options.map(opt => `<li>(${opt.label}) ${opt.text}</li>`).join("")}
-          </ul>
-        `;
+        const optionsHTML = q.options.map(opt => `<li>(${opt.label}) ${opt.text}</li>`).join("");
+
+        qDiv.innerHTML = `題目 ${idx + 1}：${q.question}<br><ul>${optionsHTML}</ul>`;
         container.appendChild(qDiv);
-    
-      correctAnswer = selected.map(q => q.answer).join("");
+
+        correctAnswer += q.answer;
+      });
     }
-    
+
     function checkAnswer() {
-      const input = document.getElementById("answer").value.replaceAll(" ", "").trim().toUpperCase();
+      const input = document.getElementById("answer").value.trim().toUpperCase();
       const errorMsg = document.getElementById("error");
-      const hintDiv = document.getElementById("hint");
-      const cleanAnswer = correctAnswer;
-    
-      if (input === cleanAnswer) {
+
+      if (input === correctAnswer) {
         localStorage.removeItem("selectedQuestions");
         window.location.href = "ticket.html?success=1";
       } else {
         errorMsg.style.display = "block";
-        hintDiv.innerText = `正確答案是：${cleanAnswer}`;
-        hintDiv.style.display = "block";
+        document.getElementById("hint").innerText = `正確答案是：${correctAnswer}`;
+        document.getElementById("hint").style.display = "block";
       }
     }
-    
+
     function toggleHint() {
       const hint = document.getElementById("hint");
-      const cleanAnswer = correctAnswer;
-      hint.innerText = `正確答案是：${cleanAnswer}`;
+      hint.innerText = `正確答案是：${correctAnswer}`;
       hint.style.display = hint.style.display === "none" ? "block" : "none";
     }
-    
+
     window.onload = fetchQuestions;
   </script>
 </body>
