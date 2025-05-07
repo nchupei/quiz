@@ -94,8 +94,16 @@
             .trim()
             .toUpperCase();
     
-          const options = row.options || {};
+          const options = {};
+          ['A', 'B', 'C', 'D', 'E', 'F'].forEach(label => {
+            const key = 'option' + label;
+            if (row[key] && row[key].toString().trim() !== '') {
+              options[label] = row[key];
+            }
+          });
+          
           return {
+            type: row.type || 'single',
             question: row.question,
             options,
             answer
