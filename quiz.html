@@ -66,11 +66,11 @@
 </head>
 <body>
   <h1>請依照下列問題回答並輸入選項代碼，全部正確才能進入購票頁面：</h1>
-  <div class="error" id="error">答案錯誤，請再試一次！</div>
   <div id="quiz-container"></div>
 
   <label for="answer">請輸入答案（如：CAB）</label>
   <input type="text" id="answer" placeholder="請輸入大寫英文選項，如：CAB" autocomplete="off">
+  <div class="error" id="error">答案錯誤，請再試一次！</div>
   <button onclick="checkAnswer()">送出</button>
   <button onclick="toggleHint()">提示</button>
 
