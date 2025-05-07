@@ -33,6 +33,11 @@
       border-radius: 5px;
       margin-top: 1rem;
     }
+    .time-spent {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: #333;
+    }
   </style>
 </head>
 <body>
@@ -40,12 +45,19 @@
     <h1>答題成功！</h1>
     <p>恭喜你通過 LE SSERAFIM 粉絲答題驗證 🎉</p>
     <p>系統即將導向購票頁面。</p>
+    <div class="time-spent" id="timeDisplay"></div>
     <button onclick="goHome()">確定</button>
   </div>
 
   <script>
     function goHome() {
       window.location.href = "index.html";
+    }
+
+    const startTime = sessionStorage.getItem("quizStartTime");
+    if (startTime) {
+      const duration = ((Date.now() - parseInt(startTime)) / 1000).toFixed(2);
+      document.getElementById("timeDisplay").innerText = `您花了 ${duration} 秒完成驗證。`;
     }
   </script>
 </body>
