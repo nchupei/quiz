@@ -23,17 +23,22 @@
     }
     .buttons {
       display: flex;
-      gap: 0.5rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
       margin-bottom: 1rem;
     }
+    
     .buttons button {
-      flex: 1;
+      width: calc(25% - 0.75rem);
+      min-width: 120px;
       padding: 1rem;
       font-size: 1rem;
       border: 1px solid #ccc;
       background-color: #eee;
       color: #000;
       cursor: pointer;
+      text-align: center;
     }
     .buttons button.active {
       background-color: #004a99;
@@ -107,6 +112,17 @@
     #timeInput button {
       padding: 0.5rem 1rem;
       font-size: 1rem;
+    }
+    @media (max-width: 768px) {
+      .buttons button {
+        width: calc(50% - 0.75rem);
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .buttons button {
+        width: 100%;
+      }
     }
   </style>
 </head>
