@@ -93,14 +93,16 @@
             .replaceAll(";", "")
             .trim()
             .toUpperCase();
-    
-          const options = row.options || {};
+        
+          const options = row.options || {};  // ✅ 正確取得已包好的 options
+        
           return {
             question: row.question,
-            options: options,  // ✅ 修正：改用手動組合的 options
+            options: options,
             answer
           };
         });
+
     
         renderQuestions();
       } catch (err) {
