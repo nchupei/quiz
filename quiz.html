@@ -89,13 +89,17 @@
 
         questions = data.map(row => {
           const options = ['A', 'B', 'C', 'D', 'E', 'F']
-            .filter(l => row[`option${l}`])
-            .map(label => ({ label, text: row[`option${label}`] }));
+            .filter(l => row.options && row.options[l])
+            .map(label => {
+              const raw = row.options[label];
+              const display = isISODate(raw) ? formatDate(raw) : raw;
+              return { label, text: display };
+            });
 
-          const answer = typeof row.answer === 'string' && row.answer.includes(';')
-          ? row.answer.split(';').map(a => String(a).replaceAll(" ", "").trim().toUpperCase())
-          : [String(row.answer).replaceAll(" ", "").trim().toUpperCase()];
-          
+          const answer = Array.isArray(row.answer)
+            ? row.answer.map(a => a.toString().trim().toUpperCase())
+            : [String(row.answer).trim().toUpperCase()];
+
           return {
             type: row.type || 'single',
             question: row.question,
@@ -112,22 +116,30 @@
       }
     }
 
+    function isISODate(str) {
+      return typeof str === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(str);
+    }
+
+    function formatDate(isoStr) {
+      const date = new Date(isoStr);
+      return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+    }
+
     function renderQuestions() {
       const container = document.getElementById("quiz-container");
       container.innerHTML = "";
       document.getElementById("hint").style.display = "none";
       correctAnswer = "";
 
-    let selected;
-    const saved = localStorage.getItem("selectedQuestions");
-    if (saved) {
-      selected = JSON.parse(saved);
-    } else {
-      selected = questions.sort(() => Math.random() - 0.5).slice(0, 2);
-      localStorage.setItem("selectedQuestions", JSON.stringify(selected));
-    }
-    window.usedQuestions = selected;
-
+      let selected;
+      const saved = localStorage.getItem("selectedQuestions");
+      if (saved) {
+        selected = JSON.parse(saved);
+      } else {
+        selected = questions.sort(() => Math.random() - 0.5).slice(0, 2);
+        localStorage.setItem("selectedQuestions", JSON.stringify(selected));
+      }
+      window.usedQuestions = selected;
 
       selected.forEach((q, idx) => {
         const qDiv = document.createElement("div");
@@ -141,32 +153,32 @@
         container.appendChild(qDiv);
       });
 
-      // 合併正確答案（只顯示用）
       correctAnswer = selected.map(q => q.answer.join("")).join("");
     }
 
     function checkAnswer() {
       const input = document.getElementById("answer").value.replaceAll(" ", "").trim().toUpperCase();
       const errorMsg = document.getElementById("error");
+      const hintDiv = document.getElementById("hint");
       const cleanAnswer = correctAnswer.replaceAll(";", "").trim().toUpperCase();
-      if (correct) {
-        localStorage.removeItem("selectedQuestions");
-        window.location.href = "ticket.html?success=1";
-      }
+
       if (input === cleanAnswer) {
+        localStorage.removeItem("selectedQuestions");
         window.location.href = "ticket.html?success=1";
       } else {
         errorMsg.style.display = "block";
+        hintDiv.innerText = `正確答案是：${cleanAnswer}`;
+        hintDiv.style.display = "block";
       }
     }
-    
+
     function toggleHint() {
       const hint = document.getElementById("hint");
       const cleanAnswer = correctAnswer.replaceAll(";", "");
       hint.innerText = `正確答案是：${cleanAnswer}`;
       hint.style.display = hint.style.display === "none" ? "block" : "none";
     }
-    
+
     window.onload = fetchQuestions;
   </script>
 </body>
