@@ -94,14 +94,7 @@
             .trim()
             .toUpperCase();
     
-          const options = {};
-          ['A', 'B', 'C', 'D', 'E', 'F'].forEach(label => {
-            const key = 'option' + label;
-            if (row[key] && row[key].toString().trim() !== '') {
-              options[label] = row[key];
-            }
-          });
-    
+          const options = row.options || {};
           return {
             question: row.question,
             options: options,  // ✅ 修正：改用手動組合的 options
