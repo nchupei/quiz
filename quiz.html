@@ -91,14 +91,24 @@
           const answer = Array.isArray(row.answer)
             ? row.answer.map(a => a.toString().trim().toUpperCase())
             : [String(row.answer).trim().toUpperCase()];
-
+        
+          const options = {};
+          // 自動從 optionA~F 抽出轉成 options 物件
+          ['A', 'B', 'C', 'D', 'E', 'F'].forEach(label => {
+            const key = 'option' + label;
+            if (row[key] && row[key].toString().trim() !== "") {
+              options[label] = row[key];
+            }
+          });
+        
           return {
             type: row.type || 'single',
             question: row.question,
-            options: row.options || {},
+            options: options,
             answer
           };
         });
+
 
         renderQuestions();
       } catch (err) {
