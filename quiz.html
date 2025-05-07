@@ -104,7 +104,7 @@
           return {
             type: row.type || 'single',
             question: row.question,
-            options: options,
+            options: row.options || {},
             answer
           };
         });
