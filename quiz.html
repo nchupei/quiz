@@ -157,16 +157,34 @@
     }
 
     function checkAnswer() {
-      const input = document.getElementById("answer").value.replaceAll(" ", "").trim().toUpperCase();
+      let input = document.getElementById("answer").value.replaceAll(" ", "").trim().toUpperCase();
       const errorMsg = document.getElementById("error");
       const hintDiv = document.getElementById("hint");
-      const cleanAnswer = correctAnswer.replaceAll(";", "").trim().toUpperCase();
+      const selected = window.usedQuestions;
+      let correct = true;
+      let idx = 0;
 
-      if (input === cleanAnswer) {
+      for (const q of selected) {
+        const expected = q.answer;
+        const len = expected.length;
+        const inputPart = input.slice(idx, idx + len).split("");
+        idx += len;
+
+        if (q.type === "multiple") {
+          if (inputPart.sort().join("") !== expected.slice().sort().join("")) correct = false;
+        } else if (q.type === "ordering") {
+          if (inputPart.join("") !== expected.join("")) correct = false;
+        } else {
+          if (inputPart[0] !== expected[0]) correct = false;
+        }
+      }
+
+      if (correct) {
         localStorage.removeItem("selectedQuestions");
         window.location.href = "ticket.html?success=1";
       } else {
         errorMsg.style.display = "block";
+        const cleanAnswer = correctAnswer.replaceAll(";", "");
         hintDiv.innerText = `正確答案是：${cleanAnswer}`;
         hintDiv.style.display = "block";
       }
