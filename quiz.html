@@ -62,12 +62,32 @@
       border-left: 4px solid #0074cc;
       font-size: 0.9rem;
     }
+    /* 等待動畫區塊 */
+    #loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+    }
+    .spinner {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #0074cc;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
   <h1>請依照下列問題回答並輸入選項代碼，全部正確才能進入購票頁面：</h1>
-  
-  <div id="quiz-container"></div>
+
+  <div id="loading"><div class="spinner"></div></div>
+  <div id="quiz-container" style="display:none;"></div>
 
   <label for="answer">請輸入答案（如：CAB）</label>
   <input type="text" id="answer" placeholder="請輸入大寫英文選項，如：CAB" autocomplete="off">
@@ -91,7 +111,6 @@
         questions = data.map(row => {
           const options = Object.entries(row.options || {}).map(([label, text]) => ({ label, text }));
           const answer = row.answer.toString().trim().toUpperCase().replaceAll(";", "").replaceAll(",", "");
-
           return {
             question: row.question,
             options,
@@ -108,7 +127,9 @@
     }
 
     function renderQuestions() {
+      document.getElementById("loading").style.display = "none";
       const container = document.getElementById("quiz-container");
+      container.style.display = "block";
       container.innerHTML = "";
       document.getElementById("hint").style.display = "none";
       correctAnswer = "";
@@ -131,7 +152,6 @@
           .join("");
         qDiv.innerHTML = `題目 ${idx + 1}：${q.question}<br><ul>${optionsHTML}</ul>`;
         container.appendChild(qDiv);
-
         correctAnswer += q.answer;
       });
     }
@@ -146,9 +166,14 @@
         window.location.href = "ticket.html?success=1";
       } else {
         errorMsg.style.display = "block";
-        // 不自動顯示提示
         hintDiv.style.display = "none";
       }
+    }
+
+    function toggleHint() {
+      const hint = document.getElementById("hint");
+      hint.innerText = `正確答案是：${correctAnswer}`;
+      hint.style.display = hint.style.display === "none" ? "block" : "none";
     }
 
     function formatDateIfISO(str) {
@@ -161,13 +186,6 @@
         return `${yyyy}-${mm}-${dd}`;
       }
       return str;
-    }
-
-    
-    function toggleHint() {
-      const hint = document.getElementById("hint");
-      hint.innerText = `正確答案是：${correctAnswer}`;
-      hint.style.display = hint.style.display === "none" ? "block" : "none";
     }
 
     window.onload = fetchQuestions;
