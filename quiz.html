@@ -66,11 +66,12 @@
 </head>
 <body>
   <h1>請依照下列問題回答並輸入選項代碼，全部正確才能進入購票頁面：</h1>
-  <div class="error" id="error">答案錯誤，請再試一次！</div>
+  
   <div id="quiz-container"></div>
 
   <label for="answer">請輸入答案（如：CAB）</label>
   <input type="text" id="answer" placeholder="請輸入大寫英文選項，如：CAB" autocomplete="off">
+  <div class="error" id="error">答案錯誤，請再試一次！</div>
   <button onclick="checkAnswer()">送出</button>
   <button onclick="toggleHint()">提示</button>
 
@@ -125,7 +126,9 @@
       selected.forEach((q, idx) => {
         const qDiv = document.createElement("div");
         qDiv.className = "question";
-        const optionsHTML = q.options.map(opt => `<li>(${opt.label}) ${opt.text}</li>`).join("");
+        const optionsHTML = q.options
+          .map(opt => `<li>(${opt.label}) ${formatDateIfISO(opt.text)}</li>`)
+          .join("");
         qDiv.innerHTML = `題目 ${idx + 1}：${q.question}<br><ul>${optionsHTML}</ul>`;
         container.appendChild(qDiv);
 
@@ -148,6 +151,19 @@
       }
     }
 
+    function formatDateIfISO(str) {
+      const iso = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+      if (typeof str === "string" && iso.test(str)) {
+        const date = new Date(str);
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `(${yyyy}-${mm}-${dd})`;
+      }
+      return str;
+    }
+
+    
     function toggleHint() {
       const hint = document.getElementById("hint");
       hint.innerText = `正確答案是：${correctAnswer}`;
