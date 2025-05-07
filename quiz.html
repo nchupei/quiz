@@ -101,11 +101,10 @@
               options[label] = row[key];
             }
           });
-          
+    
           return {
-            type: row.type || 'single',
             question: row.question,
-            options,
+            options: options,  // ✅ 修正：改用手動組合的 options
             answer
           };
         });
@@ -117,6 +116,7 @@
         console.error("fetch error:", err);
       }
     }
+
     
     function renderQuestions() {
       const container = document.getElementById("quiz-container");
