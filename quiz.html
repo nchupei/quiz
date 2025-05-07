@@ -108,39 +108,40 @@
       }
     }
 
-    function renderQuestions() {
-      const container = document.getElementById("quiz-container");
-      container.innerHTML = "";
-      document.getElementById("hint").style.display = "none";
-      correctAnswer = "";
+function renderQuestions() {
+  const container = document.getElementById("quiz-container");
+  container.innerHTML = "";
+  document.getElementById("hint").style.display = "none";
+  correctAnswer = "";
 
-      let selected;
-      const saved = localStorage.getItem("selectedQuestions");
-      if (saved) {
-        selected = JSON.parse(saved);
-      } else {
-        selected = questions.sort(() => Math.random() - 0.5).slice(0, 2);
-        localStorage.setItem("selectedQuestions", JSON.stringify(selected));
-      }
-      window.usedQuestions = selected;
+  let selected;
+  const saved = localStorage.getItem("selectedQuestions");
+  if (saved) {
+    selected = JSON.parse(saved);
+  } else {
+    selected = questions.sort(() => Math.random() - 0.5).slice(0, 2);
+    localStorage.setItem("selectedQuestions", JSON.stringify(selected));
+  }
+  window.usedQuestions = selected;
 
-      selected.forEach((q, idx) => {
-        const qDiv = document.createElement("div");
-        qDiv.className = "question";
-        qDiv.innerHTML = `
-          題目 ${idx + 1}：${q.question} ${q.type === "multiple" ? "（複選）" : q.type === "ordering" ? "（排序）" : ""}<br>
-          <ul>
-            ${Object.entries(q.options).map(([label, text]) => {
-              if (!text || text.trim() === "") return "";
-              return `<li>(${label}) ${text}</li>`;
-            }).join("")}
-          </ul>
-        `;
-        container.appendChild(qDiv);
-      });
+  selected.forEach((q, idx) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
 
-      correctAnswer = selected.map(q => q.answer.join("")).join("");
-    }
+    const optionsHTML = Object.entries(q.options || {})
+      .map(([label, text]) => `<li>(${label}) ${text}</li>`)
+      .join("");
+
+    qDiv.innerHTML = `
+      題目 ${idx + 1}：${q.question} ${q.type === "multiple" ? "（複選）" : q.type === "ordering" ? "（排序）" : ""}<br>
+      <ul>${optionsHTML}</ul>
+    `;
+    container.appendChild(qDiv);
+  });
+
+  correctAnswer = selected.map(q => q.answer.join("")).join("");
+}
+
 
     function checkAnswer() {
       let input = document.getElementById("answer").value.replaceAll(" ", "").trim().toUpperCase();
