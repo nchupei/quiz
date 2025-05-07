@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>LE SSERAFIM 搶票答題驗證</title>
   <style>
     body {
@@ -66,11 +66,10 @@
 </head>
 <body>
   <h1>請依照下列問題回答並輸入選項代碼，全部正確才能進入購票頁面：</h1>
-
   <div id="quiz-container"></div>
 
-  <label for="answer">請輸入答案（如：CO）</label>
-  <input type="text" id="answer" placeholder="請輸入大寫英文選項，如：CO">
+  <label for="answer">請輸入答案（如：CAB）</label>
+  <input type="text" id="answer" placeholder="請輸入大寫英文選項，如：CAB" autocomplete="off">
   <div class="error" id="error">答案錯誤，請再試一次！</div>
   <button onclick="checkAnswer()">送出</button>
   <button onclick="toggleHint()">提示</button>
@@ -78,224 +77,86 @@
   <div id="hint"></div>
 
   <script>
-    const questions = [
-      {
-        text: "LE SSERAFIM 的官方粉絲名稱是什麼？",
-        options: [
-          { label: "A", text: "Flame" },
-          { label: "B", text: "Fearless" },
-          { label: "C", text: "FEARNOT" },
-          { label: "D", text: "Firefly" }
-        ],
-        answer: "C"
-      },
-      {
-        text: "LE SSERAFIM 第二位公布的成員是誰？",
-        options: [
-          { label: "M", text: "金采源" },
-          { label: "N", text: "許允真" },
-          { label: "O", text: "洪恩採" },
-          { label: "P", text: "中村一葉" }
-        ],
-        answer: "O"
-      },
-      {
-        text: "LE SSERAFIM 的第一張專輯是？",
-        options: [
-          { label: "E", text: "ANTIFRAGILE" },
-          { label: "F", text: "UNFORGIVEN" },
-          { label: "G", text: "FEARLESS" },
-          { label: "H", text: "CRAZY" }
-        ],
-        answer: "G"
-      },
-      {
-        text: "以下哪支 MV 是最快破億的？",
-        options: [
-          { label: "J", text: "Fearless" },
-          { label: "K", text: "Antifragile" },
-          { label: "L", text: "Easy" },
-          { label: "M", text: "Unforgiven" }
-        ],
-        answer: "K"
-      },
-      {
-        text: "LE SSERAFIM 第八支破億的 MV 是哪一首？",
-        options: [
-          { label: "Q", text: "Smart" },
-          { label: "R", text: "Crazy" },
-          { label: "S", text: "Perfect Night" },
-          { label: "T", text: "Easy" }
-        ],
-        answer: "R"
-      },
-      {
-        text: "LE SSERAFIM 的應援色是什麼？",
-        options: [
-          { label: "U", text: "Rose Gold" },
-          { label: "V", text: "Fearless Blue" },
-          { label: "W", text: "Midnight Black" },
-          { label: "X", text: "Sunset Orange" }
-        ],
-        answer: "V"
-      },
-      {
-        text: "LE SSERAFIM 在何時拿下 AAA 三冠王？",
-        options: [
-          { label: "A", text: "2023年" },
-          { label: "B", text: "2024年" },
-          { label: "C", text: "2022年" },
-          { label: "D", text: "2025年" }
-        ],
-        answer: "B"
-      },
-      {
-        text: "LE SSERAFIM 在 NHK 紅白初登場是哪年？",
-        options: [
-          { label: "A", text: "2022" },
-          { label: "B", text: "2023" },
-          { label: "C", text: "2024" },
-          { label: "D", text: "2021" }
-        ],
-        answer: "A"
-      },
-      {
-        text: "LE SSERAFIM 的應援色為？",
-        options: [
-          { label: "A", text: "Sapphire Blue" },
-          { label: "B", text: "Fearless Blue" },
-          { label: "C", text: "Cotton Pink" },
-          { label: "D", text: "Glitter Gold" }
-        ],
-        answer: "B"
-      },
-      {
-        text: "粉絲名稱 FEARNOT 的寓意是什麼？",
-        options: [
-          { label: "A", text: "不再恐懼的我們" },
-          { label: "B", text: "要勇敢追夢" },
-          { label: "C", text: "綻放的花朵" },
-          { label: "D", text: "我們不再孤單" }
-        ],
-        answer: "C"
-      },
-      {
-        text: "LE SSERAFIM 的《Unforgiven》是哪年幾月發行？",
-        options: [
-          { label: "A", text: "2022年10月" },
-          { label: "B", text: "2023年5月" },
-          { label: "C", text: "2024年2月" },
-          { label: "D", text: "2024年8月" }
-        ],
-        answer: "B"
-      },
-      {
-        text: "LE SSERAFIM 首度進入 Billboard Top 10 是哪一張專輯？",
-        options: [
-          { label: "A", text: "Fearless" },
-          { label: "B", text: "Antifragile" },
-          { label: "C", text: "Unforgiven" },
-          { label: "D", text: "Easy" }
-        ],
-        answer: "C"
-      },
-      {
-        text: "《Crazy》是哪年哪月回歸？",
-        options: [
-          { label: "A", text: "2024年8月" },
-          { label: "B", text: "2024年12月" },
-          { label: "C", text: "2023年8月" },
-          { label: "D", text: "2023年5月" }
-        ],
-        answer: "A"
-      },
-      {
-        text: "LE SSERAFIM 第一支破億的 MV 是哪首？",
-        options: [
-          { label: "A", text: "Unforgiven" },
-          { label: "B", text: "Fearless" },
-          { label: "C", text: "Antifragile" },
-          { label: "D", text: "Perfect Night" }
-        ],
-        answer: "B"
-      },
-      {
-        text: "LE SSERAFIM 哪支 MV 是破億速度最快的？",
-        options: [
-          { label: "A", text: "Fearless" },
-          { label: "B", text: "Smart" },
-          { label: "C", text: "Antifragile" },
-          { label: "D", text: "Crazy" }
-        ],
-        answer: "C"
-      },
-      {
-        text: "《Easy》是哪支破億 MV？",
-        options: [
-          { label: "A", text: "第 3 支" },
-          { label: "B", text: "第 5 支" },
-          { label: "C", text: "第 7 支" },
-          { label: "D", text: "第 8 支" }
-        ],
-        answer: "C"
-      }  
-    ];
+    const sheetURL = 'https://script.google.com/macros/s/AKfycby-iZu86RUo1KTC6F01sDtXyTAg_sTbsQg0H9YF346WSjCX-03B--lgooYVKVAlYohkfg/exec';
 
-    let selected = [];
+    let questions = [];
     let correctAnswer = "";
 
-    function shuffle(array) {
-      return array.sort(() => Math.random() - 0.5);
+    async function fetchQuestions() {
+      try {
+        const res = await fetch(sheetURL);
+        const data = await res.json();
+
+        questions = data.map(row => {
+          const options = ['A', 'B', 'C', 'D', 'E', 'F']
+            .filter(l => row[`option${l}`])
+            .map(label => ({ label, text: row[`option${label}`] }));
+
+          const answer = typeof row.answer === 'string' && row.answer.includes(';')
+          ? row.answer.split(';').map(a => String(a).replaceAll(" ", "").trim().toUpperCase())
+          : [String(row.answer).replaceAll(" ", "").trim().toUpperCase()];
+          
+          return {
+            type: row.type || 'single',
+            question: row.question,
+            options,
+            answer
+          };
+        });
+
+        renderQuestions();
+      } catch (err) {
+        document.getElementById("error").innerText = "載入題目失敗，請稍後再試。";
+        document.getElementById("error").style.display = "block";
+        console.error("fetch error:", err);
+      }
     }
 
     function renderQuestions() {
       const container = document.getElementById("quiz-container");
       container.innerHTML = "";
-      document.getElementById("hint").innerHTML = "";
       document.getElementById("hint").style.display = "none";
-      selected = [];
-      const picked = shuffle([...questions]).slice(0, 2);
+      correctAnswer = "";
 
-      picked.forEach((q, idx) => {
-        selected.push(q);
-        const shuffledOptions = shuffle([...q.options]);
+      const selected = questions.sort(() => Math.random() - 0.5).slice(0, 2);
+      window.usedQuestions = selected;
+
+      selected.forEach((q, idx) => {
         const qDiv = document.createElement("div");
         qDiv.className = "question";
         qDiv.innerHTML = `
-          題目 ${idx + 1}：${q.text}<br>
-          <ul>${shuffledOptions.map(o => `<li>(${o.label}) ${o.text}</li>`).join('')}</ul>
+          題目 ${idx + 1}：${q.question} ${q.type === "multiple" ? "（複選）" : q.type === "ordering" ? "（排序）" : ""}<br>
+          <ul>
+            ${q.options.map(opt => `<li>(${opt.label}) ${opt.text}</li>`).join("")}
+          </ul>
         `;
         container.appendChild(qDiv);
-
-        const correct = shuffledOptions.find(o => o.text === q.options.find(opt => opt.label === q.answer).text);
-        q.correctLabel = correct.label;
       });
 
-      correctAnswer = picked.map(q => q.correctLabel).join("");
+      // 合併正確答案（只顯示用）
+      correctAnswer = selected.map(q => q.answer.join("")).join("");
     }
 
     function checkAnswer() {
-      const input = document.getElementById("answer").value.trim().toUpperCase();
+      const input = document.getElementById("answer").value.replaceAll(" ", "").trim().toUpperCase();
       const errorMsg = document.getElementById("error");
-
-      if (input === correctAnswer) {
+      const cleanAnswer = correctAnswer.replaceAll(";", "").trim().toUpperCase();
+      
+      if (input === cleanAnswer) {
         window.location.href = "ticket.html?success=1";
       } else {
         errorMsg.style.display = "block";
       }
     }
-
+    
     function toggleHint() {
       const hint = document.getElementById("hint");
-      if (hint.style.display === "none") {
-        hint.innerText = `正確答案是：${correctAnswer}`;
-        hint.style.display = "block";
-      } else {
-        hint.style.display = "none";
-      }
+      const cleanAnswer = correctAnswer.replaceAll(";", "");
+      hint.innerText = `正確答案是：${cleanAnswer}`;
+      hint.style.display = hint.style.display === "none" ? "block" : "none";
     }
-
-    window.onload = renderQuestions;
+    
+    window.onload = fetchQuestions;
   </script>
 </body>
 </html>
