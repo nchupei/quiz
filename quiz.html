@@ -119,30 +119,16 @@
       document.getElementById("hint").style.display = "none";
       correctAnswer = "";
     
-      const saved = localStorage.getItem("selectedQuestions");
-      let selected;
-      if (saved) {
-        selected = JSON.parse(saved);
-      } else {
-        selected = questions.sort(() => Math.random() - 0.5).slice(0, 2);
-        localStorage.setItem("selectedQuestions", JSON.stringify(selected));
-      }
-    
-      window.usedQuestions = selected;
-    
-      selected.forEach((q, idx) => {
+      questions.slice(0, 2).forEach((q, idx) => {
         const qDiv = document.createElement("div");
         qDiv.className = "question";
-        const optionsHTML = Object.entries(q.options || {})
-          .map(([label, text]) => `<li>(${label}) ${text}</li>`)
-          .join("");
-    
         qDiv.innerHTML = `
-          題目 ${idx + 1}：${q.question}<br>
-          <ul>${optionsHTML}</ul>
+          題目 ${idx + 1}：${q.question} ${q.type === "multiple" ? "（複選）" : q.type === "ordering" ? "（排序）" : ""}<br>
+          <ul>
+            ${q.options.map(opt => `<li>(${opt.label}) ${opt.text}</li>`).join("")}
+          </ul>
         `;
         container.appendChild(qDiv);
-      });
     
       correctAnswer = selected.map(q => q.answer).join("");
     }
