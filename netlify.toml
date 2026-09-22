@@ -1,5 +1,0 @@
-[[redirects]]
-  from = "/api/questions"
-  to = "https://script.google.com/macros/s/AKfycbymu9WajXo1dpoiJiz-SPKi8fuq6XkkjF6lq-qsdInsfRf-01lKXoImtGKMzDSuP7QiQQ/exec"
-  status = 200
-  force = true
